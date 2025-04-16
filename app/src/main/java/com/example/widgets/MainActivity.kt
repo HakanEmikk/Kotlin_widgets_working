@@ -4,11 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -23,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.widgets.ui.theme.WidgetsTheme
 
@@ -62,14 +66,20 @@ style = TextStyle(background = Color.Black,)
         value = textFieldInput.value,
         onValueChange = {textFieldInput.value=it},
         label = { Text(text = "Veri Giriniz") })
-    Button(onClick = {textFieldOutput.value=textFieldInput.value}) {
+    Button(onClick = {textFieldOutput.value=textFieldInput.value},
+        colors =ButtonDefaults.buttonColors(
+            containerColor = Color.Red, contentColor = Color.White
+        ), border = BorderStroke(1.dp, Color.Black)
+    ) {
         Text(text = "Veriyi al")
     }
     OutlinedTextField(
         value = textFieldInputOutlined.value,
         onValueChange = {textFieldInputOutlined.value=it},
         label = { Text(text = "Veri Giriniz") })
-    OutlinedButton(onClick = {textFieldOutput.value=textFieldInputOutlined.value}) {
+    OutlinedButton(onClick = {textFieldOutput.value=textFieldInputOutlined.value}, colors =ButtonDefaults.buttonColors(
+        containerColor = Color.Red, contentColor = Color.White
+    ), border = BorderStroke(1.dp, Color.Black)) {
         Text(text = "Veriyi al Outlined")
     }
 }
