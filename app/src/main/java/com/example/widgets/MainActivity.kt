@@ -46,12 +46,12 @@ Column(modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.SpaceEvenly,
     horizontalAlignment = Alignment.CenterHorizontally,)
 {
-    Text(text ="Gelen Veri : ${textFieldInput.value}" )
+    Text(text ="Gelen Veri : ${textFieldOutput.value}" )
     TextField(
         value = textFieldInput.value,
         onValueChange = {textFieldInput.value=it},
         label = { Text(text = "Veri Giriniz") })
-    Button(onClick = {textFieldInput.value=textFieldInput.value}) {
+    Button(onClick = {textFieldOutput.value=textFieldInput.value}) {
         Text(text = "Veriyi al")
     }
 }
