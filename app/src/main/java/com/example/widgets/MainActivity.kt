@@ -1,12 +1,17 @@
 package com.example.widgets
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
+import android.view.ViewGroup
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -15,6 +20,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
@@ -22,6 +28,10 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -30,6 +40,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
@@ -43,7 +55,10 @@ import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +66,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.example.widgets.ui.theme.WidgetsTheme
 import kotlin.math.log
 
@@ -61,7 +77,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             WidgetsTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    RadioButtonPage(
+                    DynamicDropdownMenuPage(
 
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -74,9 +90,205 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Preview() {
     WidgetsTheme {
-        RadioButtonPage()
+        DynamicDropdownMenuPage()
     }
 }
+
+@Composable
+fun DynamicDropdownMenuPage(modifier: Modifier = Modifier) {
+   val countyList = listOf("türkiye", "İtalya", "Almanya", "Japonya", "Rusya", "Çin")
+
+    val menuStartControl = remember { mutableStateOf(false) }
+    val selectIndex= remember { mutableStateOf(0) }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box {
+           Row(verticalAlignment = Alignment.CenterVertically,
+               horizontalArrangement = Arrangement.Center,
+               modifier = Modifier.size(100.dp,50.dp).
+               clickable(onClick = {
+                   menuStartControl.value=true
+               })
+
+
+               ) {
+               Text(text = countyList[selectIndex.value])
+               Image(painter = painterResource(id = R.drawable.dropdown_menu_image), contentDescription = "")
+           }
+            DropdownMenu(
+                expanded = menuStartControl.value,
+                onDismissRequest = {
+                    menuStartControl.value = false
+                }
+            ) {
+                countyList.forEachIndexed{index,country ->
+                    DropdownMenuItem(
+                        onClick = {
+                            Log.e("Menu", "Ülke  Seçildi:$country")
+                            menuStartControl.value = false
+                            selectIndex.value=index
+                        },
+                        text = {
+                            Text(country)
+                        },
+                    )
+                }
+            }
+        }
+        Button(
+            onClick = {
+
+            }
+        ) {
+            Text(text = "Göster")
+        }
+    }
+}
+
+@Composable
+fun DropdownMenuPage(modifier: Modifier = Modifier) {
+    val menuStartControl= remember { mutableStateOf(false) }
+    Column(
+    modifier = Modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.SpaceEvenly,
+    horizontalAlignment = Alignment.CenterHorizontally,
+) {
+    Box{
+            Button(
+                onClick = {
+                    menuStartControl.value=true
+                }
+            ) {
+                Text(text = "Göster")
+            }
+            DropdownMenu(
+                expanded = menuStartControl.value,
+                onDismissRequest = {
+                    menuStartControl.value=false
+                }
+            ) {
+                DropdownMenuItem(
+                    onClick = {
+                        Log.e("Menu", "Sil  Seçildi")
+                        menuStartControl.value = false
+                    },
+                    text = {
+                        Text("sil")
+                    },
+                )
+                DropdownMenuItem(
+                    onClick = {
+                        Log.e("Menu", "Güncelle  Seçildi")
+                        menuStartControl.value = false
+                    },
+                    text = {
+                        Text("Güncelle")
+                    },
+                )
+            }
+    }
+}
+}
+
+@Composable
+fun ImagePage(modifier: Modifier = Modifier) {
+    val activity=(LocalContext.current as Activity)
+Column {
+    Image(contentDescription = "",
+        bitmap = ImageBitmap.
+        imageResource(id =
+            activity.resources.getIdentifier("add_image",
+                "drawable",
+                activity.packageName
+            )
+        )
+
+    )
+}
+}
+
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+fun WebviewPage(modifier: Modifier = Modifier) {
+val url=""
+AndroidView(factory = {
+    WebView(it).apply {
+        layoutParams=ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        webViewClient= WebViewClient()
+        loadUrl(url)
+    }
+},
+    update =
+        {
+it.loadUrl(url)
+        }
+)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProgressIndicatorPage(modifier: Modifier = Modifier) {
+    val progressState= remember { mutableStateOf(false) }
+    val sliderValue= remember { mutableStateOf(0f) }
+    Column( modifier=Modifier.fillMaxSize(),
+
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    )
+    {
+if (progressState.value){
+    CircularProgressIndicator(color = Color.Red)
+}
+Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+    Button(
+        onClick = {
+            progressState.value=true
+        }
+    ) {
+        Text(text = "Başla")
+    }
+    Button(
+        onClick = {
+            progressState.value=false
+        }
+    ) {
+        Text(text = "Dur")
+    }
+}
+
+        Text(text = "Sonuç : ${sliderValue.value.toInt()}")
+
+        Slider(
+            value = sliderValue.value,
+            onValueChange = {
+                sliderValue.value=it
+            },
+            valueRange = 0f..100f,
+            modifier = Modifier.padding(all = 20.dp),
+            colors = SliderDefaults.colors(
+                thumbColor = Color.Red,
+                activeTrackColor = Color.Blue,
+                inactiveTickColor = Color.Black
+            )
+        )
+
+Button(
+    onClick = {
+        Log.e("Slider",sliderValue.value.toString())
+    }
+) {
+    Text(text = "Göster")
+}
+    }
+
+}
+
 @Composable
 fun RadioButtonPage(modifier: Modifier = Modifier) {
     val radioButtonSelected= remember { mutableStateOf(0) }
